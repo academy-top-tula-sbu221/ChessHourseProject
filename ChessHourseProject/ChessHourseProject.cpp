@@ -32,6 +32,9 @@ int main()
 
     while (1)
     {
+        std::cout << "\n";
+        PrintDesk();
+
         int values[8]{};
 
         for (int i = 0; i < SizeDiff; i++)
@@ -39,12 +42,16 @@ int main()
             Cell dcell;
             dcell.row = rowCurr + diff[i].row;
             dcell.col = colCurr + diff[i].col;
-            
-            values[i] = CellValue(dcell);
+            if(IsDesk(dcell.row, dcell.col) && !desk[dcell.row][dcell.col])
+                values[i] = CellValue(dcell);
         }
 
         if (!IsStep(values, SizeDiff))
+        {
+            //desk[rowCurr][colCurr] = ++step;
             break;
+        }
+            
 
         int indexDiff = MinValueCell(values, SizeDiff);
 
@@ -55,7 +62,7 @@ int main()
 
         //if (step == 64) break;
     }
-
+    std::cout << "\n";
     PrintDesk();
 }
 
@@ -67,7 +74,7 @@ int CellValue(Cell cell)
         int drow = cell.row + diff[d].row;
         int dcol = cell.col + diff[d].col;
         
-        if (IsDesk(drow, dcol))
+        if (!IsDesk(drow, dcol))
             continue;
 
         if (!desk[drow][dcol])
@@ -79,7 +86,14 @@ int CellValue(Cell cell)
 int MinValueCell(int values[], int size)
 {
     int index{};
-    for (int s = 0; s < size; s++)
+    for(int s = 0; s < size; s++)
+        if (values[s])
+        {
+            index = s;
+            break;
+        }
+            
+    for (int s = index + 1; s < size; s++)
         if (values[s] != 0 && values[index] > values[s])
             index = s;
     return index;
@@ -87,7 +101,7 @@ int MinValueCell(int values[], int size)
 
 bool IsDesk(int row, int col)
 {
-    return row < 0 || row >= SizeDesk || col < 0 || col >= SizeDesk;
+    return row >= 0 && row < SizeDesk && col >= 0 && col < SizeDesk;
 }
 
 bool IsStep(int values[], int size)
